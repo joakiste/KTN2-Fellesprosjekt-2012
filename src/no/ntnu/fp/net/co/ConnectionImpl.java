@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
+import javax.sound.sampled.ReverbType;
+
 //import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import no.ntnu.fp.net.admin.Log;
@@ -87,15 +89,17 @@ public class ConnectionImpl extends AbstractConnection {
     		throw new SocketTimeoutException();
     	}
     	if(ack.getFlag() == Flag.SYN_ACK){
+    		//If we received a syn_ack the connection is established
     		state = State.ESTABLISHED;
     	}
     	else{
     		//Handle case: ghost packet occured
     		state = State.CLOSED;
+    		
     		connect(remoteAddress,remotePort);
     		return;
     	}
-    	IPacket = constructInternalPacket(Flag.SYN);
+    	IPacket = constructInternalPacket(Flag.ACK);
     	sendDataPacketWithRetransmit(IPacket);
     }
     private KtnDatagram sendPacketWithRetransmitConnect(KtnDatagram packet) throws EOFException, IOException{
@@ -119,7 +123,19 @@ public class ConnectionImpl extends AbstractConnection {
      * @see Connection#accept()
      */
     public Connection accept() throws IOException, SocketTimeoutException {
-    	throw new NotImplementedException();
+    	state = State.LISTEN;
+    	Connection c;
+    	KtnDatagram packet = receivePacket(true);
+    	while(packet.getFlag() != Flag.SYN){
+    		packet = receivePacket(true);
+    	}
+    	remotePort = packet.getDest_port();
+    	myPort = findFreePort();
+    	return c;
+    }
+    
+    public int findFreePort(){
+    	
     }
 
     /**
@@ -128,7 +144,7 @@ public class ConnectionImpl extends AbstractConnection {
      * @param msg
      *            - the String to be sent.
      * @throws ConnectException
-     *             If no connection exists.
+     *             If no connection exists
      * @throws IOException
      *             If no ACK was received.
      * @see AbstractConnection#sendDataPacketWithRetransmit(KtnDatagram)
