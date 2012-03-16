@@ -1,0 +1,18 @@
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp        Logging Entity           Source                   Destination              Seq No  Flag    Ack No  Start Payload            Checksum    Comment                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+15:27:15.199     AbstractConnection                                                                                                                      Waiting for incoming packet in receiveAck()       
+15:27:15.201     SendTimer                78.91.0.90:4001          Agurk/78.91.0.90:5555    160     SYN     -1                               0           Sending this datagram (try: 1)                    
+15:27:15.205     CLSocket::receive                                                                                                                       Receiving at:4001                                 
+15:27:15.209     SendTimer                                                                                                                               ERROR: Could not establish a connection to Agurk/78.91.0.90:5555
+15:27:16.14      SendTimer                78.91.0.90:4001          Agurk/78.91.0.90:5555    160     SYN     -1                               0           Sending this datagram (try: 2)                    
+15:27:16.14      SendTimer                                                                                                                               ERROR: Could not establish a connection to Agurk/78.91.0.90:5555
+15:27:16.799     SendTimer                78.91.0.90:4001          Agurk/78.91.0.90:5555    160     SYN     -1                               0           Sending this datagram (try: 3)                    
+15:27:16.801     SendTimer                                                                                                                               ERROR: Could not establish a connection to Agurk/78.91.0.90:5555
+15:27:17.604     SendTimer                78.91.0.90:4001          Agurk/78.91.0.90:5555    160     SYN     -1                               0           Sending this datagram (try: 4)                    
+15:27:17.604     SendTimer                                                                                                                               ERROR: Could not establish a connection to Agurk/78.91.0.90:5555
+15:27:18.2       AbstractConnection                                                                                                                      Waiting for incoming packet in receiveAck()       
+15:27:18.5       CLSocket::receive                                                                                                                       Receiving at:4001                                 
+15:27:18.7       CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        

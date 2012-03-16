@@ -1,0 +1,22 @@
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp        Logging Entity           Source                   Destination              Seq No  Flag    Ack No  Start Payload            Checksum    Comment                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+15:24:44.716     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:44.794     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:47.522     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:47.522     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:47.522     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        
+15:24:50.333     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:50.333     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:50.333     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        
+15:24:53.133     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:53.135     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:53.137     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        
+15:24:55.936     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:55.939     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:55.941     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        
+15:24:58.752     AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:24:58.752     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:24:58.752     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        

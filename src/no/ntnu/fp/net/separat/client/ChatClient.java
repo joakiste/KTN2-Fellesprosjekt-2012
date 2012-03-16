@@ -52,7 +52,7 @@ public class ChatClient {
         }
         //	  this.username = JOptionPane.showInputDialog(gui,"Skriv inn
         // navn:");
-        gui = new Gui("Chat klient laget av Geir", this);
+        gui = new Gui("Hahahahah", this);
         this.login(username);
 
         gui.setDefaultCloseOperation(Gui.EXIT_ON_CLOSE);

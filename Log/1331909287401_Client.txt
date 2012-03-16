@@ -1,0 +1,18 @@
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp        Logging Entity           Source                   Destination              Seq No  Flag    Ack No  Start Payload            Checksum    Comment                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+15:48:7.510      AbstractConnection                                                                                                                      Waiting for incoming packet in receiveAck()       
+15:48:7.512      SendTimer                78.91.0.90:4001          78.91.0.90:5555          9816    SYN     -1                               0           Sending this datagram (try: 1)                    
+15:48:7.517      CLSocket::receive                                                                                                                       Receiving at:4001                                 
+15:48:7.549      NETWORK                                                                                                                                 Packet 9816 send!                                 
+15:48:8.310      SendTimer                78.91.0.90:4001          78.91.0.90:5555          9816    SYN     -1                               0           Sending this datagram (try: 2)                    
+15:48:8.313      NETWORK                                                                                                                                 Packet 9816 send!                                 
+15:48:9.111      SendTimer                78.91.0.90:4001          78.91.0.90:5555          9816    SYN     -1                               0           Sending this datagram (try: 3)                    
+15:48:9.114      NETWORK                                                                                                                                 Packet 9816 send!                                 
+15:48:9.924      SendTimer                78.91.0.90:4001          78.91.0.90:5555          9816    SYN     -1                               0           Sending this datagram (try: 4)                    
+15:48:9.924      NETWORK                                                                                                                                 Packet 9816 send!                                 
+15:48:10.313     AbstractConnection                                                                                                                      Waiting for incoming packet in receiveAck()       
+15:48:10.315     CLSocket::receive                                                                                                                       Receiving at:4001                                 
+15:48:10.317     CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        

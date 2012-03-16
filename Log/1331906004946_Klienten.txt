@@ -1,0 +1,15 @@
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp        Logging Entity           Source                   Destination              Seq No  Flag    Ack No  Start Payload            Checksum    Comment                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+14:53:25.320     AbstractConnection                                                                                                                      Waiting for incoming packet in receiveAck()       
+14:53:25.324     SendTimer                78.91.0.90:5555          localhost/127.0.0.1:105006960    SYN     -1                               0           Sending this datagram (try: 1)                    
+14:53:25.328     CLSocket::receive                                                                                                                       Receiving at:5555                                 
+14:53:25.331     SendTimer                                                                                                                               ERROR: Could not establish a connection to localhost/127.0.0.1:10500
+14:53:26.120     SendTimer                78.91.0.90:5555          localhost/127.0.0.1:105006960    SYN     -1                               0           Sending this datagram (try: 2)                    
+14:53:26.122     SendTimer                                                                                                                               ERROR: Could not establish a connection to localhost/127.0.0.1:10500
+14:53:26.920     SendTimer                78.91.0.90:5555          localhost/127.0.0.1:105006960    SYN     -1                               0           Sending this datagram (try: 3)                    
+14:53:26.922     SendTimer                                                                                                                               ERROR: Could not establish a connection to localhost/127.0.0.1:10500
+14:53:27.734     SendTimer                78.91.0.90:5555          localhost/127.0.0.1:105006960    SYN     -1                               0           Sending this datagram (try: 4)                    
+14:53:27.734     SendTimer                                                                                                                               ERROR: Could not establish a connection to localhost/127.0.0.1:10500

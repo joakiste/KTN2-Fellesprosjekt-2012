@@ -1,0 +1,18 @@
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp        Logging Entity           Source                   Destination              Seq No  Flag    Ack No  Start Payload            Checksum    Comment                                           
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+15:48:4.17       AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:48:4.126      CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:48:6.852      AbstractConnection                                                                                                                      Waiting for incoming packet in doReceive()        
+15:48:6.852      CLSocket::receive                                                                                                                       Receiving at:5555                                 
+15:48:6.852      CLSocket::coAccept                                                                                                                      Fant gjenbrukbar innsocket                        
+15:48:7.526      CLSocket::coReceive                                                                                                                     State of socket is:
+Bound:true
+Closed: false
+Connected: true
+Local Port: 5555
+Remote Port:50011
+15:48:7.572      CLSocket::receive                                                                                                                       Finished receiving at:5555                        
+15:48:7.573      AbstractConnection                                                                                                                      Received an internal packet in doReceive          

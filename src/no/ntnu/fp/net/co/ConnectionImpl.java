@@ -51,11 +51,11 @@ public class ConnectionImpl extends AbstractConnection {
      */
     public ConnectionImpl(int myPort) {
         this.myPort = myPort;
-    	
+    	this.myAddress = getIPv4Address();
     	//throw new NotImplementedException();
     }
 
-    private String getIPv4Address() {
+    private String getIPv4Address(){
         try {
             return InetAddress.getLocalHost().getHostAddress();
         }
@@ -80,28 +80,42 @@ public class ConnectionImpl extends AbstractConnection {
      */
     public void connect(InetAddress remoteAddress, int remotePort) throws IOException, SocketTimeoutException{
     	KtnDatagram ack;
-
+    	this.remoteAddress = remoteAddress.getHostAddress();
+    	this.remotePort = remotePort;
     	KtnDatagram IPacket = constructInternalPacket(Flag.SYN);
     	// uses a self made method similar to sendDataPacketWithRetransmit() because we need to send a packet even though the state is set to CLOSED
-    	ack = sendPacketWithRetransmitConnect(IPacket);
+    	//ack = sendPacketWithRetransmitConnect(IPacket);
+    	try{
+			simplySendPacket(IPacket);
+		} catch (ClException e) {
+			Log.writeToLog("SimplySendFailed", "ConnectionImpl");
+			e.printStackTrace();
+		}
+    	state = State.SYN_SENT;
+    	ack = receiveAck();
     	if(ack == null){
-    		//seems like the receiveAck() returns null if it timedout. Link in javadoc 
+    		//seems like the receiveAck() returns null if it timed out. Link in javadoc 
     		throw new SocketTimeoutException();
     	}
-    	if(ack.getFlag() == Flag.SYN_ACK){
-    		//If we received a syn_ack the connection is established
+    	remotePort = ack.getSrc_port();
+    	if(ack.getFlag() == Flag.SYN_ACK && ack.getSrc_addr() == this.remoteAddress){
+    		//If we received a syn_ack from the right server the connection is established
     		state = State.ESTABLISHED;
+    		System.out.println("Client Established!");
     	}
     	else{
     		//Handle case: ghost packet occured
     		state = State.CLOSED;
-    		
+    		//starts a new connect and thus disregards the ghost packet
     		connect(remoteAddress,remotePort);
     		return;
     	}
     	IPacket = constructInternalPacket(Flag.ACK);
     	sendDataPacketWithRetransmit(IPacket);
     }
+    /**
+     * Improved the simplysend method, but only for the connectMethod due to state change in the method
+     */
     private KtnDatagram sendPacketWithRetransmitConnect(KtnDatagram packet) throws EOFException, IOException{
     	lastDataPacketSent = packet;
     	
@@ -110,7 +124,7 @@ public class ConnectionImpl extends AbstractConnection {
     	// similar algorithm to the one found in sendDataPacketWithRetransmit()
     	Timer timer = new Timer();
     	timer.scheduleAtFixedRate(new SendTimer(new ClSocket(), packet), 0, RETRANSMIT);
-    	state = State.SYN_SENT;
+    	state = State.SYN_SENT; //state change
     	KtnDatagram ack = receiveAck();
     	timer.cancel();
     	return ack; //returns the ack from the server
@@ -124,18 +138,45 @@ public class ConnectionImpl extends AbstractConnection {
      */
     public Connection accept() throws IOException, SocketTimeoutException {
     	state = State.LISTEN;
-    	Connection c;
-    	KtnDatagram packet = receivePacket(true);
-    	while(packet.getFlag() != Flag.SYN){
+    	KtnDatagram packet;
+    	do{
     		packet = receivePacket(true);
     	}
-    	remotePort = packet.getDest_port();
-    	myPort = findFreePort();
-    	return c;
-    }
+    	while(packet == null || packet.getFlag() != Flag.SYN);
+    	state = State.SYN_RCVD;
+    	ConnectionImpl c = new ConnectionImpl(findFreePort());//method to find a free port
+    	c.remotePort = packet.getDest_port();
+    	c.remoteAddress = packet.getSrc_addr();
+    	packet = c.constructInternalPacket(Flag.SYN_ACK);
+    	try{
+			simplySendPacket(packet);
+		} catch (ClException e) {
+			Log.writeToLog("SimplySendFailed", "ConnectionImpl");
+			e.printStackTrace();
+		}
+    	packet = c.receiveAck();
+    	c.state = State.ESTABLISHED;
+		System.out.println("Server Established!");
+    	state = State.LISTEN;
+    	return (Connection)c;
+    	}
     
-    public int findFreePort(){
-    	
+    public int findFreePort() throws IOException{//method to find a free port
+    	int port = 5555;
+    	int startPort = port;
+    	boolean foundPort = false;
+    	int numPorts = usedPorts.size();
+    	while(!foundPort){
+    		port++;
+    		port = port % numPorts;
+    		if(!usedPorts.get(port)){ //assuming usedport is stored as false, this if should hit when we find a freeport
+    			foundPort = true; 
+    		}
+    		if(port == startPort) //so it has come to this, after one ciculation this if will hit and there is no freeports
+    			//Log.writeToLog("No free ports", "AbstractConnection");
+    			throw new IOException();
+    	}
+    	return port;
     }
 
     /**
@@ -185,7 +226,7 @@ public class ConnectionImpl extends AbstractConnection {
      * @return true if packet is free of errors, false otherwise.
      */
     protected boolean isValid(KtnDatagram packet) {
-    	packet.setChecksum(checksum)
+    	packet.setChecksum(checksum);
         throw new NotImplementedException();
     }
 }
