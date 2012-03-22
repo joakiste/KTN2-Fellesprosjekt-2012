@@ -199,19 +199,22 @@ public class ConnectionImpl extends AbstractConnection {
 		KtnDatagram ack = sendDataPacketWithRetransmit(packet);
 		if(ack != null){ //we got an ack!
 			System.out.println("through null test");
-			if(!isValid(ack) || ack.getSeq_nr() >= nextSequenceNo){ //if the ack we received is not valid or if the ack number is too high we are dealing with a ghost package
-				System.out.println("failed valid or seqNrTest");
+			if(!isValid(ack) || ack.getAck() > nextSequenceNo-1){ //if the ack we received is not valid or if the ack number is too high we are dealing with a ghost package
+				System.out.println("failed valid or seqNrTest: 1. valid test, 2. ackSeqNr too high");
+				System.out.println(!isValid(ack));
+				System.out.println(ack.getSeq_nr() >= nextSequenceNo);
 				sendTries++;//treating ghost (ack)package as if we did not receive ack from other side
 				send(msg);
 				sendTries = 0;
 				return;
 			}
-			else if(ack.getSeq_nr() <= nextSequenceNo){ //we received an ack for the last package, resending this one
+			else if(ack.getAck() < nextSequenceNo-1){ //we received an ack for the last package, resending this one
+				System.out.println("received ack for last package");
 				send(msg);
 				return;
 			}
 			else{//we got valid ACK
-				
+				System.out.println("Valid ACK");
 			}
 		}
 		else{//did not get ack from the other side
@@ -264,12 +267,16 @@ public class ConnectionImpl extends AbstractConnection {
 					}
 					return receive();
 				}
-				else{//packet is valid
+				else{//packet has valid checksum
 					System.out.println("Though Valid Check");
-					if(lastPacket != null && packet.getSeq_nr()!=nextSequenceNo){
+					if(lastPacket != null && packet.getSeq_nr()!=lastPacket.getSeq_nr()+1){
+						System.out.println("Failed packet null check or seqNr check, true is bad: 1. null check, 2. seqNr check");
+						System.out.println(lastPacket != null);
+						System.out.println(packet.getSeq_nr()!=lastPacket.getSeq_nr()-1);
 						sendAck(lastPacket, false);
 						return receive();
 					}else{
+						System.out.println("Valid packet!");
 						sendAck(packet,false);
 						lastPacket = packet;
 						return (String) packet.getPayload();
@@ -293,7 +300,7 @@ public class ConnectionImpl extends AbstractConnection {
 	 * @see Connection#close()
 	 */
 	public void close() throws IOException {
-
+		
 	}
 
 	/**
