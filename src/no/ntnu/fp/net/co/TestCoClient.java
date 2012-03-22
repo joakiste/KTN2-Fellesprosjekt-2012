@@ -4,6 +4,7 @@
  */
 package no.ntnu.fp.net.co;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;

@@ -184,7 +184,6 @@ public abstract class AbstractConnection implements Connection {
         packet.setFlag(flag);
         packet.setSeq_nr(nextSequenceNo++);
         packet.setPayload(null);
-
         return packet;
     }
 
