@@ -48,7 +48,7 @@ public class ConnectionImpl extends AbstractConnection {
 	private int sendTries = 0; //keeps track of how many times we have tried to send a packet and not received answer
 	private static final int MAXSENDTRIES = 2;
 	private int receiveTries = 0; //keeps track of how many times we have tried to receive a packet and not received answer
-	private static final int MAXRECIEVETRIES = 2;
+	private static final int MAXRECEIVETRIES = 2;
 
 	private KtnDatagram lastPacket = null;
 	/**
@@ -141,9 +141,16 @@ public class ConnectionImpl extends AbstractConnection {
 			e.printStackTrace();
 		}
 		ack = c.receiveAck();
+		if(!ack.getSrc_addr().equals(c.remoteAddress)){
+			System.out.println("ACK SRC not Equal to remoteAdress");
+			System.out.println("Ack.src: "+ ack.getSrc_addr());
+			System.out.println("Remoteadress: " + c.remoteAddress);
+			
+			return null;
+		}
 		if(ack == null || ack.getFlag() != Flag.ACK)
 			throw new SocketTimeoutException();
-
+		
 		c.state = State.ESTABLISHED;
 		//System.out.println("Server connection up");
 		Log.writeToLog("Connection established", "Client");
@@ -225,8 +232,8 @@ public class ConnectionImpl extends AbstractConnection {
 				return;
 			}
 			else{//we consider the connection lost
-				state = State.CLOSED;
-				throw new ConnectException(); //not sure how to handle lost connection
+				state = State.CLOSED; //TODO how to handle cut connection
+				throw new ConnectException("Connection lost "); //not sure how to handle lost connection
 			}
 		}
 	}
@@ -240,11 +247,20 @@ public class ConnectionImpl extends AbstractConnection {
 	 * @see AbstractConnection#sendAck(KtnDatagram, boolean)
 	 */
 	public String receive() throws ConnectException, IOException, EOFException {
-		KtnDatagram packet = receivePacket(false);
+		KtnDatagram packet = null;
+		try{
+			packet = receivePacket(false);			
+			System.out.println(packet);
+		}
+		catch(EOFException e){ // EOFException means that we got a FIN
+			//lastPacket = packet;
+			state = State.CLOSE_WAIT;
+			throw new EOFException();
+		}
 		System.out.println("RECEIVED PACKET! true if we got packet:");
 		System.out.println(packet != null);
 		if(packet == null){ // timed out tries again according to MaxreceiveTries
-			if(receiveTries < MAXRECIEVETRIES){
+			if(receiveTries < MAXRECEIVETRIES){
 				receiveTries++;
 				String msg = receive();
 				receiveTries=0;
@@ -252,7 +268,7 @@ public class ConnectionImpl extends AbstractConnection {
 			}
 			else{
 				state = State.CLOSED;//TODO check if additional operations is needed to close connection
-				throw new EOFException();
+				throw new ConnectException("Connection Lost");
 			}
 		}
 		else{ //received a packet
@@ -275,10 +291,12 @@ public class ConnectionImpl extends AbstractConnection {
 						System.out.println(packet.getSeq_nr()!=lastPacket.getSeq_nr()-1);
 						sendAck(lastPacket, false);
 						return receive();
-					}else{
+					}else{//Valid Packet
 						System.out.println("Valid packet!");
 						sendAck(packet,false);
 						lastPacket = packet;
+						System.out.println("Last Packet (from receive): ");
+						System.out.println(lastPacket);
 						return (String) packet.getPayload();
 				}}
 			}
@@ -296,10 +314,70 @@ public class ConnectionImpl extends AbstractConnection {
 
 	/**
 	 * Close the connection.
-	 * 
 	 * @see Connection#close()
 	 */
 	public void close() throws IOException {
+		System.out.println("System in state : " + state);
+		KtnDatagram ack = null;
+		KtnDatagram packet = null;
+		KtnDatagram finack = null;
+		if(state == State.CLOSE_WAIT){
+			System.out.println("Last Packet: "+lastPacket);
+			sendAck(lastPacket, false);
+			packet = constructInternalPacket(Flag.FIN);
+
+			try {
+				Thread.currentThread().sleep(100);//Wait for client to be ready to recieve FIN
+				simplySendPacket(packet);
+			} catch (ClException e) {
+				e.printStackTrace();
+			}
+			catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			ack = receiveAck();
+			if(ack == null)
+				//How to handle this? Answer: Do nothing!
+			state = State.CLOSED;
+		}
+		else if(state == State.ESTABLISHED){
+			packet = constructInternalPacket(Flag.FIN);
+			try {
+				simplySendPacket(packet);
+			} catch (ClException e) {
+				e.printStackTrace();
+			}
+			state = State.FIN_WAIT_1;
+			ack = receiveAck();
+			if(ack == null){
+				if(sendTries < MAXSENDTRIES){
+					state = State.ESTABLISHED;
+					close();
+					return;					
+				}
+				else{
+					state = State.CLOSED;
+				}
+			}
+			state = State.FIN_WAIT_2;
+			
+			System.out.println("Waiting for Fin2");
+			finack = receiveAck();
+			if(finack == null)
+				finack = receiveAck();
+			System.out.println("Done waiting for Fin2");
+			if(finack != null)
+				sendAck(finack, false);
+				state = State.TIME_WAIT;
+			
+			state = State.CLOSED;
+			
+		}
+		else{
+			System.out.println("Impressive you managed to call close in the state: " + state);
+			throw new IOException();
+		}
+		
 		
 	}
 

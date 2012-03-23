@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-  <errors>false</errors>
+  <errors>true</errors>
   <loss>0.7</loss>
-  <delay>0.7</delay>
-  <ghost>0.8</ghost>
-  <payload>0.7</payload>
-  <header>0.7</header>
+  <delay>0.5</delay>
+  <ghost>0.3</ghost>
+  <payload>0.5</payload>
+  <header>0.8</header>
   <onlydata>true</onlydata>
-  <serverAddress>localhost</serverAddress>
-  <serverport>10500</serverport>
+  <serverAddress>129.241.107.130</serverAddress>
+  <serverport>31391</serverport>
   <simpleConnection>false</simpleConnection>
 </root>
 
